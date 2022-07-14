@@ -1,5 +1,4 @@
 import pygame
-from sklearn.decomposition import TruncatedSVD
 
 GRAVITY = 1
 
