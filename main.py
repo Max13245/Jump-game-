@@ -21,13 +21,7 @@ map = map_generator.MAP(WIDTH, HEIGHT)
 
 BACKGROUND_COLOR = (28, 7, 54)
 
-def move_map():
-    if game_player.y <= HEIGHT - HEIGHT / 2:
-        for tile in map.tiles:
-            tile.y -= game_player.speed_vert
-
-        game_player.y -= game_player.speed_vert
-
+def delete_passed_tiles():
     passed_tiles = 0
     for tile in map.tiles:
         if tile.y >= HEIGHT:
@@ -37,15 +31,26 @@ def move_map():
 
     del map.tiles[0: passed_tiles]
     num_passed_layers = 0
-
+ 
     for layer in map.layers:
         num_tiles = layer.count(1)
         passed_tiles -= num_tiles
 
         if passed_tiles >= 0:
             num_passed_layers += 1
+        else:
+            break
     
     del map.layers[0: num_passed_layers]
+
+def move_map():
+    if game_player.y <= HEIGHT - HEIGHT / 2:
+        for tile in map.tiles:
+            tile.y -= game_player.speed_vert
+
+        game_player.y -= game_player.speed_vert
+    
+    delete_passed_tiles()
 
 def exicute_events(key_is_up, go_right, go_left):
     if len(map.layers) < int(HEIGHT / map.layer_distance) + 1:
