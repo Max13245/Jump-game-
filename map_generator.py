@@ -12,7 +12,7 @@ class MAP:
         self.tile_width = screen_width / 15
 
         self.num_layer_tiles = self.screen_width / self.tile_width
-        self.layers = self.generate_map()
+        self.layers = []
         self.tiles = []
 
     def draw_map(self, surface):
@@ -50,20 +50,24 @@ class MAP:
             
             self.change_tile(layer, created_layer)
 
-    def create_tiles(self, screen_width):
-        for layer_indx, layer in enumerate(self.layers):
-            
-            for indx, tile in enumerate(layer):
-                #make it one tile 
-                if tile != 0:
-                    if tile == 1:
-                        tile = game_objects.TILE(indx * self.tile_width, layer_indx * self.layer_distance, screen_width)
-                    elif tile[0] == "hori":
-                        pass
-                    elif tile[0] == "vert":
-                        pass
+    def create_tiles(self, screen_width, screen_height):
+        if len(self.tiles) > 0:
+            beneith_layer_y_pos = self.tiles[-1].y
+        else:
+            beneith_layer_y_pos = screen_height
+
+        for indx, tile in enumerate(self.layers[-1]):
+            #make it one tile 
+            if tile != 0:
+                if tile == 1:
+                    #miss klopt de self.tiles niet 
+                    tile = game_objects.TILE(indx * self.tile_width, beneith_layer_y_pos - self.layer_distance, screen_width) 
+                elif tile[0] == "hori":
+                    pass
+                elif tile[0] == "vert":
+                    pass
                     
-                    self.tiles.append(tile)
+                self.tiles.append(tile)
 
     def adjust_list(self, platform_pos, platform_length, layer):
         #loc is miss niet goed, omdat indx niet hetzelfde is als loc
@@ -105,9 +109,3 @@ class MAP:
                 layer = self.adjust_list(platform_pos, platform_length, layer)
 
         return layer
-
-    def generate_map(self):
-        num_layers = int(self.screen_height / self.layer_distance)
-        layers = [self.generate_layer() for _ in range(num_layers)]
-        
-        return layers
