@@ -14,9 +14,7 @@ pygame.display.set_caption("Wuble jump")
 PLAYER_WIDTH, PLAYER_HEIGHT = math.floor(WIDTH / 25), math.floor(HEIGHT / 25)
 PLAYER_COLOR = (255, 255, 255)
 
-START_POSITION = (WIDTH / 2 - PLAYER_WIDTH / 2, HEIGHT - PLAYER_HEIGHT)
-game_player = player.PLAYER(START_POSITION[0], START_POSITION[1], PLAYER_WIDTH, PLAYER_HEIGHT, HEIGHT)
-
+game_player = player.PLAYER(WIDTH, HEIGHT)
 map = map_generator.MAP(WIDTH, HEIGHT)
 
 BACKGROUND_COLOR = (28, 7, 54)
@@ -66,7 +64,7 @@ def exicute_events(key_is_up, go_right, go_left):
         game_player.walk("left", map.tiles)
     
     game_player.jump(map.tiles, jump = key_is_up)
-    game_player.is_screen_collision(WIDTH)
+    game_player.is_screen_collision()
     move_map()
 
     game_player.draw_player(SCREEN, PLAYER_COLOR)

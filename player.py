@@ -1,20 +1,19 @@
 import pygame
-from sklearn.decomposition import TruncatedSVD
+import math
 
 GRAVITY = 1
 
 class PLAYER:
-    def __init__(self, x, y, width, height, screen_height, jump_height = 14, speed_hori = 6, speed_vert = 0, max_ammu = 3, damage = 10):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
+    def __init__(self, screen_width, screen_height):
+        self.screen_width = screen_width
         self.screen_height = screen_height
-        self.jump_height = jump_height
-        self.speed_hori = speed_hori
-        self.speed_vert = speed_vert
-        self.max_ammu = max_ammu
-        self.damage = damage
+        self.width = math.floor(screen_width / 25)
+        self.height = math.floor(screen_height / 25)
+        self.x = screen_width / 2 - self.width / 2
+        self.y = screen_height - self.height
+        self.jump_height = 14
+        self.speed_hori = 6
+        self.speed_vert = 0
         self.on_platform = False
 
     def get_tile_rects(self, tile_objects):
@@ -43,11 +42,11 @@ class PLAYER:
                 self.on_platform = True
                 self.jump(tile_objects, jump = K_UP_down)
 
-    def is_screen_collision(self, screen_width):
+    def is_screen_collision(self):
         if self.x <= 0:
             self.x = 0
-        elif self.x + self.width >= screen_width:
-            self.x = screen_width - self.width
+        elif self.x + self.width >= self.screen_width:
+            self.x = self.screen_width - self.width
 
         if self.y + self.height >= self.screen_height:
             self.y = self.screen_height - self.height
