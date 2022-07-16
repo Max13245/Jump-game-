@@ -1,16 +1,16 @@
 import pygame 
-import random
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
 class TILE:
     #types are: static, dynamic_hori, dynamic_vert
-    def __init__(self, x, y, screen_width, type = "static", max_high = None, min_high = None, max_wide = None, min_wide = None, layer_distance = None):
+    def __init__(self, x, y, platform_length, screen_width, type = "static", max_high = None, min_high = None, max_wide = None, min_wide = None, layer_distance = None):
         self.x = x
         self.y = y
         self.height = 10
-        self.width = screen_width / 15
+        self.tile_width = screen_width / 15
+        self.width = self.tile_width * platform_length
         self.type = type
         self.max_high = max_high
         self.min_high = min_high
@@ -18,7 +18,7 @@ class TILE:
         self.min_wide = min_wide
 
         if type == "dynamic_horizontal":
-            self.speed = self.width / 10
+            self.speed = self.tile_width / 10
         elif type == "dynamic_vertical":
             self.speed = layer_distance / 25
 

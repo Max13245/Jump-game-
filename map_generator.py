@@ -19,27 +19,43 @@ class MAP:
         for tile in self.tiles:
             tile.draw_tile(surface)
 
+    def find_start_end(self, tile_positions):
+        platform_beginnings = []
+        platform_endings = []
+
+        for tile_indx in range(len(tile_positions)):
+            if tile_indx == len(tile_positions) - 1 and tile_positions[-1] == 1:
+                platform_endings.append(tile_indx)
+                break
+
+            two_part_list = tile_positions[tile_indx: tile_indx + 2]
+            if tile_indx == 0 and two_part_list[0] == 1:
+                platform_beginnings.append(tile_indx)
+                if two_part_list == [1, 0]:
+                    platform_endings.append(tile_indx)
+            elif two_part_list == [0, 1]:
+                platform_beginnings.append(tile_indx + 1)
+            elif two_part_list == [1, 0]:
+                platform_endings.append(tile_indx)
+        
+        return platform_beginnings, platform_endings
+
     def create_tiles(self, screen_width, screen_height):
         if len(self.tiles) > 0:
             beneith_layer_y_pos = self.tiles[-1].y
         else:
             beneith_layer_y_pos = screen_height
 
-        for indx, tile in enumerate(self.layers[-1]):
-            #make it one tile 
-            if tile != 0:
-                if tile == 1:
-                    #miss klopt de self.tiles niet 
-                    tile = game_objects.TILE(indx * self.tile_width, beneith_layer_y_pos - self.layer_distance, screen_width) 
-                elif tile[0] == "hori":
-                    pass
-                elif tile[0] == "vert":
-                    pass
-                    
-                self.tiles.append(tile)
+        platform_beginnings, platform_endings = self.find_start_end(self.layers[-1])
+
+        for pos in range(len(platform_beginnings)):
+            tile_x_position = platform_beginnings[pos] * self.tile_width
+            tile_y_position = beneith_layer_y_pos - self.layer_distance
+            platform_length = platform_endings[pos] - platform_beginnings[pos] + 1
+            tile = game_objects.TILE(tile_x_position, tile_y_position, platform_length, screen_width) 
+            self.tiles.append(tile)
 
     def adjust_list(self, platform_pos, platform_length, layer):
-        #loc is miss niet goed, omdat indx niet hetzelfde is als loc
         zipped = zip([loc for loc in range(platform_pos, platform_pos + platform_length)], [1 for _ in range(platform_length)])
         
         for pos, length in zipped:

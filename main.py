@@ -33,7 +33,8 @@ def delete_passed_tiles():
     num_passed_layers = 0
  
     for layer in map.layers:
-        num_tiles = layer.count(1)
+        beginnings, endings = map.find_start_end(layer)
+        num_tiles = len(beginnings)
         passed_tiles -= num_tiles
 
         if passed_tiles >= 0:

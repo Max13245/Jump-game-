@@ -18,10 +18,7 @@ class PLAYER:
         self.on_platform = False
 
     def get_tile_rects(self, tile_objects):
-        tiles = []
-        for tile_object in tile_objects:
-            tiles.append(tile_object.tile)
-
+        tiles = [tile_object.tile for tile_object in tile_objects]
         return tiles
 
     def is_platform_collision(self, tile_objects, direction, K_UP_down = False):
