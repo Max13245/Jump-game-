@@ -1,2 +1,5 @@
 #ignore all file with .pyc
 *.pyc
+
+#ignore .DS_Store
+*.DS_Store
