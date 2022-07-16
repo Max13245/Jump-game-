@@ -4,10 +4,10 @@ WHITE = (255, 255, 255)
 
 class TILE:
     #types are: static, dynamic_hori, dynamic_vert
-    def __init__(self, x, y, platform_length, screen_width, screen_height, type = "static", layer_distance = None):
+    def __init__(self, x, y, tile_width, platform_length, screen_width, screen_height, type = "static", layer_distance = None):
         self.x = x
         self.y = y
-        self.tile_width = screen_width / 15
+        self.tile_width = tile_width
         self.width = self.tile_width * platform_length
         self.height = screen_height / 75
         self.type = type

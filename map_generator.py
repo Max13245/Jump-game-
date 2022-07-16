@@ -6,12 +6,11 @@ class MAP:
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.layer_distance = screen_height / 10
+        self.num_layer_tiles = 15
 
         #is also in object file 
-        self.tile_height = 10
-        self.tile_width = screen_width / 15
+        self.tile_width = screen_width / self.num_layer_tiles
 
-        self.num_layer_tiles = self.screen_width / self.tile_width
         self.layers = []
         self.tiles = []
 
@@ -52,7 +51,7 @@ class MAP:
             tile_x_position = platform_beginnings[pos] * self.tile_width
             tile_y_position = beneith_layer_y_pos - self.layer_distance
             platform_length = platform_endings[pos] - platform_beginnings[pos] + 1
-            tile = game_objects.TILE(tile_x_position, tile_y_position, platform_length, screen_width) 
+            tile = game_objects.TILE(tile_x_position, tile_y_position, self.tile_width, platform_length, screen_width, screen_height) 
             self.tiles.append(tile)
 
     def adjust_list(self, platform_pos, platform_length, layer):
