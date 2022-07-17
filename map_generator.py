@@ -8,11 +8,8 @@ class MAP:
         self.screen_height = screen_height
         self.layer_distance = screen_height / 10
         self.num_layer_tiles = num_layer_tiles
-
-        #is also in object file 
         self.tile_width = screen_width / self.num_layer_tiles
         self.tile_height = screen_height / 75
-
         self.layers = []
         self.tiles = []
         self.build_tiles = []
@@ -37,9 +34,9 @@ class MAP:
     def draw_map(self, surface):
         self.tiles_colliding()
         for tile in self.tiles:
-            tile.draw_tile(surface)
+            tile.draw_tile(surface, self.get_tile_rects(self.all_tiles))
         for tile in self.build_tiles:
-            tile.draw_tile(surface) 
+            tile.draw_tile(surface, None) 
 
     def build_tile(self, side, player):
         if side == "top":
@@ -49,7 +46,7 @@ class MAP:
             x_pos = (player.x + player.width / 2) - self.tile_width / 2
             y_pos = player.y + player.height
         
-        tile = game_objects.TILE(x_pos, y_pos, self.tile_width, 1, self.tile_height, self.screen_width, self.screen_height)
+        tile = game_objects.TILE(x_pos, y_pos, self.tile_width, 1, self.tile_height, self.layer_distance, "static", self.screen_width, self.screen_height)
         self.build_tiles.append(tile)
 
     def build_barrier(self, side, player):
@@ -61,8 +58,17 @@ class MAP:
             x_pos = player.x + player.width + distance_to_player
             y_pos = player.y + player.height - player.height
 
-        tile = game_objects.TILE(x_pos, y_pos, self.tile_height, 1, player.height, self.tile_width, self.screen_width, self.screen_height)
+        tile = game_objects.TILE(x_pos, y_pos, self.tile_height, 1, player.height, self.tile_width, self.layer_distance, self.screen_width)
         self.build_tiles.append(tile)
+
+    def random_moving_tiles(self):
+        if random.randint(1, 10) == 1:
+            type = random.choice(["dynamic_horizontal", "dynamic_vertical"])
+        else:
+            type = "static"
+        
+        return type
+        
 
     def find_start_end(self, tile_positions):
         platform_beginnings = []
@@ -85,11 +91,11 @@ class MAP:
         
         return platform_beginnings, platform_endings
 
-    def create_tiles(self, screen_width, screen_height):
+    def create_tiles(self):
         if len(self.tiles) > 0:
             beneith_layer_y_pos = self.tiles[-1].y
         else:
-            beneith_layer_y_pos = screen_height
+            beneith_layer_y_pos = self.screen_height
 
         platform_beginnings, platform_endings = self.find_start_end(self.layers[-1])
 
@@ -97,7 +103,8 @@ class MAP:
             tile_x_position = platform_beginnings[pos] * self.tile_width
             tile_y_position = beneith_layer_y_pos - self.layer_distance
             platform_length = platform_endings[pos] - platform_beginnings[pos] + 1
-            tile = game_objects.TILE(tile_x_position, tile_y_position, self.tile_width, platform_length, self.tile_height, screen_width, screen_height) 
+            type = self.random_moving_tiles()
+            tile = game_objects.TILE(tile_x_position, tile_y_position, self.tile_width, platform_length, self.tile_height, self.layer_distance, type, self.screen_width, self.screen_width) 
             self.tiles.append(tile)
 
     def adjust_list(self, platform_pos, platform_length, layer):

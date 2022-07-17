@@ -1,4 +1,3 @@
-from distutils.command.build import build
 import pygame
 import sys
 import player
@@ -52,11 +51,12 @@ def delete_passed_tiles():
 def move_map():
     if game_player.y <= HEIGHT - HEIGHT / 2:
         if game_player.speed_vert < 0:
-            for tile in map.tiles:
+            for tile in map.all_tiles:
                 tile.y -= game_player.speed_vert
-            for tile in map.build_tiles:
-                tile.y -= game_player.speed_vert
-
+                if tile.type == "dynamic_vertical":
+                    tile.max_high -= game_player.speed_vert
+                    tile.min_high -= game_player.speed_vert
+                    
             game_player.y -= game_player.speed_vert
     
     delete_passed_tiles()
@@ -66,7 +66,7 @@ def exicute_events(key_is_up, go_right, go_left):
     map.all_tiles = map.tiles + map.build_tiles
     if len(map.layers) < int(HEIGHT / map.layer_distance) + 1:
         map.layers.append(map.generate_layer())
-        map.create_tiles(WIDTH, HEIGHT)
+        map.create_tiles()
 
     map.draw_map(SCREEN)
 
