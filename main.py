@@ -1,3 +1,4 @@
+from distutils.command.build import build
 import pygame
 import sys
 import player
@@ -14,44 +15,53 @@ pygame.display.set_caption("Wuble jump")
 PLAYER_WIDTH, PLAYER_HEIGHT = math.floor(WIDTH / 25), math.floor(HEIGHT / 25)
 PLAYER_COLOR = (255, 255, 255)
 
+NUM_LAYER_TILES = 15
 game_player = player.PLAYER(WIDTH, HEIGHT)
-map = map_generator.MAP(WIDTH, HEIGHT)
+map = map_generator.MAP(WIDTH, HEIGHT, NUM_LAYER_TILES)
 
 BACKGROUND_COLOR = (28, 7, 54)
 
-def delete_passed_tiles():
+def delete_passed_tiles(tiles, map_tiles = True):
     passed_tiles = 0
-    for tile in map.tiles:
+    for tile in tiles:
         if tile.y >= HEIGHT:
             passed_tiles += 1
         else:
             break
 
-    del map.tiles[0: passed_tiles]
-    num_passed_layers = 0
- 
-    for layer in map.layers:
-        beginnings, endings = map.find_start_end(layer)
-        num_tiles = len(beginnings)
-        passed_tiles -= num_tiles
+    del tiles[0: passed_tiles]
 
-        if passed_tiles >= 0:
-            num_passed_layers += 1
-        else:
-            break
+    if map_tiles:
+        num_passed_layers = 0
     
-    del map.layers[0: num_passed_layers]
+        for layer in map.layers:
+            beginnings, endings = map.find_start_end(layer)
+            num_tiles = len(beginnings)
+            passed_tiles -= num_tiles
+
+            if passed_tiles >= 0:
+                num_passed_layers += 1
+            else:
+                break
+        
+        del map.layers[0: num_passed_layers]
+
+    return tiles
 
 def move_map():
     if game_player.y <= HEIGHT - HEIGHT / 2:
         for tile in map.tiles:
             tile.y -= game_player.speed_vert
+        for tile in map.build_tiles:
+            tile.y -= game_player.speed_vert
 
         game_player.y -= game_player.speed_vert
     
-    delete_passed_tiles()
+    map.tiles = delete_passed_tiles(map.tiles)
+    map.build_tiles = delete_passed_tiles(map.build_tiles, map_tiles = False)
 
 def exicute_events(key_is_up, go_right, go_left):
+    map.all_tiles = map.tiles + map.build_tiles
     if len(map.layers) < int(HEIGHT / map.layer_distance) + 1:
         map.layers.append(map.generate_layer())
         map.create_tiles(WIDTH, HEIGHT)
@@ -59,11 +69,11 @@ def exicute_events(key_is_up, go_right, go_left):
     map.draw_map(SCREEN)
 
     if go_right:
-        game_player.walk("right", map.tiles)
+        game_player.walk("right", map.all_tiles)
     if go_left:
-        game_player.walk("left", map.tiles)
+        game_player.walk("left", map.all_tiles)
     
-    game_player.jump(map.tiles, jump = key_is_up)
+    game_player.jump(map.all_tiles, jump = key_is_up)
     game_player.is_screen_collision()
     move_map()
 
@@ -84,22 +94,20 @@ def event_loop(key_is_up, go_right, go_left):
                 go_left = True
 
             if event.key == pygame.K_w:
-                key_is_up = True
-            if event.key == pygame.K_d:
-                go_right = True
+                map.build_tile("top", game_player)
             if event.key == pygame.K_a:
-                go_left = True
+                map.build_barrier("left", game_player)
+            if event.key == pygame.K_s:
+                map.build_tile("bottom", game_player)
+            if event.key == pygame.K_d:
+                map.build_barrier("right", game_player)
             
+
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT:
                 go_right = False
             if event.key == pygame.K_LEFT:
                 go_left = False 
-
-            if event.key == pygame.K_d:
-                go_right = False
-            if event.key == pygame.K_a:
-                go_left = False  
     
     exicute_events(key_is_up, go_right, go_left)
     return go_right, go_left

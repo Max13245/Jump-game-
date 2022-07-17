@@ -2,21 +2,49 @@ import game_objects
 import random
 
 class MAP:
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, num_layer_tiles):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.layer_distance = screen_height / 10
-        self.num_layer_tiles = 15
+        self.num_layer_tiles = num_layer_tiles
 
         #is also in object file 
         self.tile_width = screen_width / self.num_layer_tiles
+        self.tile_height = screen_height / 75
 
         self.layers = []
         self.tiles = []
+        self.build_tiles = []
+        self.all_tiles = None
+
+    def build_tile(self, side, player):
+        if side == "top":
+            x_pos = (player.x + player.width / 2) - self.tile_width / 2
+            y_pos = player.y - self.tile_height
+        elif side == "bottom":
+            x_pos = (player.x + player.width / 2) - self.tile_width / 2
+            y_pos = player.y + player.height
+        
+        tile = game_objects.TILE(x_pos, y_pos, self.tile_width, 1, self.tile_height, self.screen_width, self.screen_height)
+        self.build_tiles.append(tile)
+
+    def build_barrier(self, side, player):
+        distance_to_player = 10
+        if side == "left":
+            x_pos = player.x - self.tile_height - distance_to_player
+            y_pos = player.y + player.height - self.tile_width
+        elif side == "right":
+            x_pos = player.x + player.width + distance_to_player
+            y_pos = player.y + player.height - self.tile_width
+
+        tile = game_objects.TILE(x_pos, y_pos, self.tile_height, 1, self.tile_width, self.tile_width, self.screen_width, self.screen_height)
+        self.build_tiles.append(tile)
 
     def draw_map(self, surface):
         for tile in self.tiles:
             tile.draw_tile(surface)
+        for tile in self.build_tiles:
+            tile.draw_tile(surface) 
 
     def find_start_end(self, tile_positions):
         platform_beginnings = []
@@ -51,7 +79,7 @@ class MAP:
             tile_x_position = platform_beginnings[pos] * self.tile_width
             tile_y_position = beneith_layer_y_pos - self.layer_distance
             platform_length = platform_endings[pos] - platform_beginnings[pos] + 1
-            tile = game_objects.TILE(tile_x_position, tile_y_position, self.tile_width, platform_length, screen_width, screen_height) 
+            tile = game_objects.TILE(tile_x_position, tile_y_position, self.tile_width, platform_length, self.tile_height, screen_width, screen_height) 
             self.tiles.append(tile)
 
     def adjust_list(self, platform_pos, platform_length, layer):

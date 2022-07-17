@@ -11,8 +11,8 @@ class PLAYER:
         self.height = math.floor(screen_height / 25)
         self.x = screen_width / 2 - self.width / 2
         self.y = screen_height - self.height
-        self.jump_height = 14
-        self.speed_hori = 6
+        self.jump_height = 14  #14
+        self.speed_hori = 6    #6
         self.speed_vert = 0
         self.on_platform = False
 
