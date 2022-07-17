@@ -1,3 +1,4 @@
+import pygame
 import game_objects
 import random
 
@@ -17,6 +18,29 @@ class MAP:
         self.build_tiles = []
         self.all_tiles = None
 
+    def get_tile_rects(self, tile_objects):
+        tiles = [tile_object.tile for tile_object in tile_objects]
+        return tiles
+
+    def tiles_colliding(self):
+        all_tiles = self.get_tile_rects(self.all_tiles)
+        for build_tile in self.build_tiles:
+            tile_collindex = pygame.Rect.collidelist(build_tile.tile, all_tiles)
+
+            if tile_collindex > 0:
+                tile = all_tiles[tile_collindex]
+                if build_tile.tile == tile:
+                    continue
+
+                self.build_tiles.remove(build_tile)
+
+    def draw_map(self, surface):
+        self.tiles_colliding()
+        for tile in self.tiles:
+            tile.draw_tile(surface)
+        for tile in self.build_tiles:
+            tile.draw_tile(surface) 
+
     def build_tile(self, side, player):
         if side == "top":
             x_pos = (player.x + player.width / 2) - self.tile_width / 2
@@ -32,19 +56,13 @@ class MAP:
         distance_to_player = 10
         if side == "left":
             x_pos = player.x - self.tile_height - distance_to_player
-            y_pos = player.y + player.height - self.tile_width
+            y_pos = player.y + player.height - player.height
         elif side == "right":
             x_pos = player.x + player.width + distance_to_player
-            y_pos = player.y + player.height - self.tile_width
+            y_pos = player.y + player.height - player.height
 
-        tile = game_objects.TILE(x_pos, y_pos, self.tile_height, 1, self.tile_width, self.tile_width, self.screen_width, self.screen_height)
+        tile = game_objects.TILE(x_pos, y_pos, self.tile_height, 1, player.height, self.tile_width, self.screen_width, self.screen_height)
         self.build_tiles.append(tile)
-
-    def draw_map(self, surface):
-        for tile in self.tiles:
-            tile.draw_tile(surface)
-        for tile in self.build_tiles:
-            tile.draw_tile(surface) 
 
     def find_start_end(self, tile_positions):
         platform_beginnings = []

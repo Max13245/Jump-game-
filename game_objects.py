@@ -11,6 +11,7 @@ class TILE:
         self.width = self.tile_width * platform_length
         self.height = tile_height
         self.type = type
+        self.tile = pygame.Rect(self.x, self.y, self.width, self.height)
 
         if type == "dynamic_horizontal":
             self.speed = self.tile_width / 10
