@@ -21,7 +21,7 @@ class TILE:
         elif type == "dynamic_vertical":
             self.speed = layer_distance / 25
             self.max_high = self.y
-            self.min_high = self.y + 2 * self.layer_distance + self.height 
+            self.min_high = self.y + 2 * self.layer_distance
 
     def screen_collision(self):
         if self.x <= 0:
@@ -66,3 +66,19 @@ class TILE:
 
         self.tile = pygame.Rect(self.x, self.y, self.width, self.height)
         pygame.draw.rect(surface, WHITE, self.tile)
+
+class DISTANCE_BLOK:
+    def __init__(self, screen_width, screen_height):
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.width = 10
+        self.height = 10
+        self.x = screen_width / 2 - self.width
+        self.y = screen_height
+        self.blok = pygame.Rect(self.x, self.y, self.width, self.height)
+
+    def get_traveled_distance(self, player_y, player_height):
+        return self.y - player_y - player_height
+
+    def get_score(self):
+        pass

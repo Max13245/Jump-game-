@@ -93,7 +93,10 @@ class MAP:
 
     def create_tiles(self):
         if len(self.tiles) > 0:
-            beneith_layer_y_pos = self.tiles[-1].y
+            if self.tiles[-1].type == "dynamic_vertical":
+                beneith_layer_y_pos = self.tiles[-1].max_high
+            else:
+                beneith_layer_y_pos = self.tiles[-1].y
         else:
             beneith_layer_y_pos = self.screen_height
 

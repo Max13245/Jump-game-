@@ -28,10 +28,12 @@ def delete_passed_build_tiles():
 def delete_passed_tiles():
     passed_tiles = 0
     for tile in map.tiles:
-        if tile.y >= HEIGHT:
-            passed_tiles += 1
+        if tile.type == "dynamic_vertical":
+            if tile.max_high >= HEIGHT:
+                passed_tiles += 1
         else:
-            break
+            if tile.y >= HEIGHT:
+                passed_tiles += 1
 
     del map.tiles[0: passed_tiles]
     num_passed_layers = 0
@@ -56,7 +58,7 @@ def move_map():
                 if tile.type == "dynamic_vertical":
                     tile.max_high -= game_player.speed_vert
                     tile.min_high -= game_player.speed_vert
-                    
+
             game_player.y -= game_player.speed_vert
     
     delete_passed_tiles()
@@ -64,6 +66,8 @@ def move_map():
 
 def exicute_events(key_is_up, go_right, go_left):
     map.all_tiles = map.tiles + map.build_tiles
+    print(len(map.tiles))
+    print(len(map.layers))
     if len(map.layers) < int(HEIGHT / map.layer_distance) + 1:
         map.layers.append(map.generate_layer())
         map.create_tiles()
